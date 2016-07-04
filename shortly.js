@@ -25,10 +25,11 @@ app.use(express.static(__dirname + '/public')); // middleware to serve up static
 var authenticate = function(req, res, next) {
   var userLoggedIn = false;
   if (!userLoggedIn) {
-    console.log('redirecting');
+    console.log('redirecting from ' + req.url);
     res.redirect('/login');
+  } else {
+    next();
   }
-  next();
 };
 
 // set up the request handler for the possible routes 
@@ -117,10 +118,13 @@ function(req, res) {
 // If the short-code doesn't exist, send the user to '/'
 /************************************************************/
 
+
 app.get('/*', function(req, res) {
   new Link({ code: req.params[0] }).fetch().then(function(link) {
     if (!link) {
-      res.redirect('/');
+      authenticate(req, res, function() {
+        res.redirect('/');
+      });
     } else {
       var click = new Click({
         linkId: link.get('id')
