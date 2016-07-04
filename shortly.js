@@ -22,44 +22,65 @@ app.use(bodyParser.json()); // bodyParser middleware will help you chunk the dat
 app.use(bodyParser.urlencoded({ extended: true })); // need to 
 app.use(express.static(__dirname + '/public')); // middleware to serve up static files 
 
+var authenticate = function(req, res, next) {
+  var userLoggedIn = false;
+  if (!userLoggedIn) {
+    console.log('redirecting');
+    res.redirect('/login');
+  }
+  next();
+};
+
 // set up the request handler for the possible routes 
-app.get('/', 
+app.get('/', authenticate,
 function(req, res) {
   res.render('index'); // render the html on the client side (index.ejs) The server will convert the ejs into a html file and send it to the client. 
 });
 
-app.get('/create', 
+app.get('/login', function(req, res) {
+  res.render('login');
+});
+
+app.get('/signup', function(req, res) {
+  res.render('signup');
+});
+
+app.post('/signup', function(req, res) {
+  
+});
+
+app.get('/create', authenticate,
 function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links', authenticate,
 function(req, res) {
   Links.reset().fetch().then(function(links) { // send links back to the database
     res.status(200).send(links.models); 
   });
 });
 
-app.post('/links', 
+app.post('/links', authenticate,
 function(req, res) {
   var uri = req.body.url;
 
-  if (!util.isValidUrl(uri)) {
+  if (!util.isValidUrl(uri)) { // check if the url is valid 
     console.log('Not a valid url: ', uri);
     return res.sendStatus(404);
   }
 
-  new Link({ url: uri }).fetch().then(function(found) {
+  new Link({ url: uri }).fetch().then(function(found) { // create a new model of Link, fetch to see if it's existing already 
     if (found) {
       res.status(200).send(found.attributes);
-    } else {
-      util.getUrlTitle(uri, function(err, title) {
+    } else { // if it isn't already existing in our Links collection, then 
+      util.getUrlTitle(uri, function(err, title) { // use the util helper 
         if (err) {
           console.log('Error reading URL heading: ', err);
           return res.sendStatus(404);
         }
 
-        Links.create({
+        Links.create({ // to add it to our links collection 
           url: uri,
           title: title,
           baseUrl: req.headers.origin
@@ -75,6 +96,18 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+
+// deny a
+
+// set up login page 
+
+// new account creation? 
+
+// set up a system that keeps track of the user thats signed in
+// and only returns the urls that the user made previously 
+
+// only let users who are signed in
+// create new urls 
 
 
 
