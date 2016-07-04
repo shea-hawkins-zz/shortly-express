@@ -11,21 +11,21 @@ var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
 
-var app = express();
+var app = express(); // creates a server instance 
 
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-app.use(partials());
+app.set('views', __dirname + '/views'); // set up the middleware 
+app.set('view engine', 'ejs'); // for any page that the client is going to request, i want to use ejs 
+app.use(partials()); // enable you to use the 'include' keyword with express-partials 
 // Parse JSON (uniform resource locators)
-app.use(bodyParser.json());
+app.use(bodyParser.json()); // bodyParser middleware will help you chunk the data in post requests and put data into the request object for you 
 // Parse forms (signup/login)
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.urlencoded({ extended: true })); // need to 
+app.use(express.static(__dirname + '/public')); // middleware to serve up static files 
 
-
+// set up the request handler for the possible routes 
 app.get('/', 
 function(req, res) {
-  res.render('index');
+  res.render('index'); // render the html on the client side (index.ejs) The server will convert the ejs into a html file and send it to the client. 
 });
 
 app.get('/create', 
@@ -35,8 +35,8 @@ function(req, res) {
 
 app.get('/links', 
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.status(200).send(links.models);
+  Links.reset().fetch().then(function(links) { // send links back to the database
+    res.status(200).send(links.models); 
   });
 });
 
