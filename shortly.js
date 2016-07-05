@@ -55,7 +55,7 @@ app.post('/signup', function(req, res) {
     password: 'bar'
   })
   .then(function(newUser) {
-    res.status(200).send(newUser);
+    res.redirect('/');
   });
 });
 
