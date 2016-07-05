@@ -3,6 +3,7 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var bcrypt = require('bcrypt');
 
 
 var db = require('./app/config');
@@ -44,14 +45,32 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
+app.post('/login', function(req, res) {
+  new User({ username: req.body.username }).fetch().then(function(foundUser) { 
+    if (foundUser) {
+      console.log(foundUser);
+      bcrypt.compare(req.body.password, foundUser.get('password'), function(err, matchPwd) {
+        if (err || !matchPwd) {
+          res.redirect('/login');
+        } else {
+          req.session.user = foundUser.get('username');
+          res.redirect('/');
+        }
+      });
+    } else {
+      res.redirect('/login');
+    }
+  });
+});
+
 app.get('/signup', function(req, res) {
   res.render('signup');
 });
 
 app.post('/signup', function(req, res) {
   Users.create({
-    username: 'foo',
-    password: 'bar'
+    username: req.body.username,
+    password: req.body.password
   })
   .then(function(newUser) {
     req.session.user = newUser.get('username');
@@ -69,6 +88,12 @@ function(req, res) {
   Links.reset().fetch().then(function(links) { // send links back to the database
     res.status(200).send(links.models); 
   });
+});
+
+app.get('/logout', function(req, res) {
+  req.session.destroy();
+  console.log('redirecting to login');
+  res.render('login');
 });
 
 app.post('/links', authenticate,
