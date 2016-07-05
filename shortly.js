@@ -26,7 +26,6 @@ app.use(bodyParser.urlencoded({ extended: true })); // need to
 app.use(express.static(__dirname + '/public')); // middleware to serve up static files 
 
 var authenticate = function(req, res, next) {
-  console.log(req.session);
   if (req.session.user) {
     next();
   } else {
@@ -48,7 +47,6 @@ app.get('/login', function(req, res) {
 app.post('/login', function(req, res) {
   new User({ username: req.body.username }).fetch().then(function(foundUser) { 
     if (foundUser) {
-      console.log(foundUser);
       bcrypt.compare(req.body.password, foundUser.get('password'), function(err, matchPwd) {
         if (err || !matchPwd) {
           res.redirect('/login');
@@ -98,7 +96,6 @@ function(req, res) {
 
 app.get('/logout', function(req, res) {
   req.session.destroy();
-  console.log('redirecting to login');
   res.render('login');
 });
 

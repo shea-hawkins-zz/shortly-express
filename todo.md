@@ -8,7 +8,7 @@
 - store session in client 
 - allow user to sign in 
 - check if user exists before created 
+- route log out 
 
 ## To-Do
-- route log out 
 - display current user links 
