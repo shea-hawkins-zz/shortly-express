@@ -2,6 +2,7 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 
 var db = require('./app/config');
@@ -16,6 +17,7 @@ var app = express(); // creates a server instance
 app.set('views', __dirname + '/views'); // set up the middleware 
 app.set('view engine', 'ejs'); // for any page that the client is going to request, i want to use ejs 
 app.use(partials()); // enable you to use the 'include' keyword with express-partials 
+app.use(session({secret: 'ceiling cat'}));
 // Parse JSON (uniform resource locators)
 app.use(bodyParser.json()); // bodyParser middleware will help you chunk the data in post requests and put data into the request object for you 
 // Parse forms (signup/login)
@@ -23,12 +25,12 @@ app.use(bodyParser.urlencoded({ extended: true })); // need to
 app.use(express.static(__dirname + '/public')); // middleware to serve up static files 
 
 var authenticate = function(req, res, next) {
-  var userLoggedIn = false;
-  if (!userLoggedIn) {
+  console.log(req.session);
+  if (req.session.user) {
+    next();
+  } else {
     console.log('redirecting from ' + req.url);
     res.redirect('/login');
-  } else {
-    next();
   }
 };
 
@@ -47,14 +49,12 @@ app.get('/signup', function(req, res) {
 });
 
 app.post('/signup', function(req, res) {
-  // new User({username: 'foo', password: 'bar'}).then(
-
-  // );
   Users.create({
     username: 'foo',
     password: 'bar'
   })
   .then(function(newUser) {
+    req.session.user = newUser.get('username');
     res.redirect('/');
   });
 });
