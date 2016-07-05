@@ -68,13 +68,19 @@ app.get('/signup', function(req, res) {
 });
 
 app.post('/signup', function(req, res) {
-  Users.create({
-    username: req.body.username,
-    password: req.body.password
-  })
-  .then(function(newUser) {
-    req.session.user = newUser.get('username');
-    res.redirect('/');
+  new User({ username: req.body.username }).fetch().then(function(foundUser) {
+    if (foundUser) {
+      res.redirect('/login');
+    } else {
+      Users.create({
+        username: req.body.username,
+        password: req.body.password
+      })
+      .then(function(newUser) {
+        req.session.user = newUser.get('username');
+        res.redirect('/');
+      });
+    }
   });
 });
 
