@@ -49,14 +49,14 @@ app.post('/login', function(req, res) {
     if (foundUser) {
       bcrypt.compare(req.body.password, foundUser.get('password'), function(err, matchPwd) {
         if (err || !matchPwd) {
-          res.redirect('/login');
+          res.redirect('/wrongPassword');
         } else {
           req.session.user = foundUser.get('username');
           res.redirect('/');
         }
       });
     } else {
-      res.redirect('/login');
+      res.render('wrongPassword');
     }
   });
 });
@@ -68,7 +68,7 @@ app.get('/signup', function(req, res) {
 app.post('/signup', function(req, res) {
   new User({ username: req.body.username }).fetch().then(function(foundUser) {
     if (foundUser) {
-      res.redirect('/login');
+      res.render('userExists');
     } else {
       Users.create({
         username: req.body.username,
