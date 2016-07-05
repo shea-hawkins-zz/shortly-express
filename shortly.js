@@ -47,7 +47,16 @@ app.get('/signup', function(req, res) {
 });
 
 app.post('/signup', function(req, res) {
-  
+  // new User({username: 'foo', password: 'bar'}).then(
+
+  // );
+  Users.create({
+    username: 'foo',
+    password: 'bar'
+  })
+  .then(function(newUser) {
+    res.status(200).send(newUser);
+  });
 });
 
 app.get('/create', authenticate,
@@ -95,7 +104,7 @@ function(req, res) {
 });
 
 /************************************************************/
-// Write your authentication routes here
+// Write your authentication routes here.
 /************************************************************/
 
 // deny a
