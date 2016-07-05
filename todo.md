@@ -4,11 +4,11 @@
 - redirect unauthenticated users 
 - create new user account
 - hash password 
+- finish authentication of user 
+- store session in client 
+- allow user to sign in 
+- check if user exists before created 
 
 ## To-Do
-- finish authentication of user 
-- check if user exists before created 
-- store session in client 
 - route log out 
 - display current user links 
-- 
